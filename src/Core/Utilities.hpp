@@ -12,6 +12,7 @@ using u16 = std::uint16_t;
 using u32 = std::uint32_t;
 using u64 = std::uint64_t;
 
+namespace Core {
 enum class PieceType : u8 {
   None = 0,
   Pawn,
@@ -27,8 +28,6 @@ enum class PieceColor : u8 {
   White,
   Black,
 };
-
-namespace Core {
 
 static inline i32 to1D(const std::pair<i32, i32> &curr) {
   return (7 - curr.second) * 8 + curr.first;

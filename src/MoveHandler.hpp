@@ -22,8 +22,6 @@ public:
                                  {2, -1}, {1, -2}, {-1, -2}, {-2, -1}};
 
     for (i32 i = 0; i < 64; i++) {
-      // row, col, so {b3} is x=b, y=3
-      // so a1 = {col,row} => x=col, y=row
       i32 x = i % 8, y = i / 8;
 
       for (auto &[dx, dy] : dir) {

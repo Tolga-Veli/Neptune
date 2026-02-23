@@ -57,7 +57,7 @@ public:
     for (i32 row = 0; row < 8; row++)
       for (i32 col = 0; col < 8; col++)
         if (auto [piece_type, piece_color] = board.at({col, row});
-            piece_type != PieceType::None) {
+            piece_type != Core::PieceType::None) {
           std::string textureName = toTextureName(piece_type, piece_color);
           sf::Sprite pieceSprite(*asset_manager.GetTexture(textureName));
           float scaleX = (float)TILE_SIZE / pieceSprite.getLocalBounds().size.x,
@@ -94,9 +94,8 @@ public:
   }
 
 private:
-  std::string toTextureName(PieceType type, PieceColor color) {
+  std::string toTextureName(Core::PieceType type, Core::PieceColor color) {
     using namespace Core;
-
     if (type == PieceType::None || color == PieceColor::None)
       return "";
 
