@@ -1,6 +1,6 @@
 #include "Application.hpp"
 
 int main() {
-  auto app = ChessEngine::App::Create();
+  auto app = Neptune::Application::Create();
   app->run();
 }

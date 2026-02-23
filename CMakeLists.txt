@@ -1,41 +1,22 @@
 cmake_minimum_required(VERSION 3.10)
-project(chess)
+project(Neptune VERSION 1.0)
 
-set(CMAKE_CXX_STANDARD 20)
-add_compile_definitions(PROJ_DIR="${CMAKE_SOURCE_DIR}")
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
-# GLAD
-add_library(glad libs/glad/src/glad.c)
-target_include_directories(glad PUBLIC libs/glad/include)
+set(SFML_BUILD_AUDIO FALSE)
+set(SFML_BUILD_NETWORK FALSE)
 
-#add_subdirectory(libs/stb)
-#target_include_directories(stb_image PUBLIC libs/stb)
+add_subdirectory(libs/sfml)
 
-# GLM
-add_subdirectory(libs/glm)
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE HEADERS "src/*.hpp")
 
-# ImGui
-set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/libs/imgui)
-file(GLOB IMGUI_SRC
-    ${IMGUI_DIR}/*.cpp
-    ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
-    ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
-)
+add_executable(Neptune ${SOURCES} ${HEADERS})
 
-add_library(imgui ${IMGUI_SRC})
-target_include_directories(imgui PUBLIC
-    ${IMGUI_DIR}
-    ${IMGUI_DIR}/backends
-    libs/glfw/include
-)
+target_include_directories(Neptune PRIVATE src)
 
-target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLAD)
+target_link_libraries(Neptune sfml-graphics sfml-window sfml-system)
 
-add_subdirectory(libs/glfw)
-
-# Executable
-file(GLOB_RECURSE SRC_FILES src/*.cpp)
-add_executable(chess ${SRC_FILES})
-
-target_include_directories(chess PUBLIC src)
-target_link_libraries(chess glfw glad imgui ${CMAKE_DL_LIBS})
