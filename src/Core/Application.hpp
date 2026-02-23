@@ -1,6 +1,5 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include <memory>
 
 #include "AssetManager.hpp"
@@ -21,7 +20,7 @@ public:
   }
 
   void run() {
-    bool isSelected = false, isWhite = false;
+    bool isSelected = false;
     std::pair<i32, i32> selected;
 
     using namespace Core;

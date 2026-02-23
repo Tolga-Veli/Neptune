@@ -4,7 +4,7 @@
 #include <sstream>
 #include <string>
 
-#include "Utilities.hpp"
+#include "Core/Utilities.hpp"
 
 namespace Neptune::Core {
 class FEN {
@@ -18,34 +18,37 @@ public:
   static FEN_Data Parse(std::string fen) {
     FEN_Data data;
     std::stringstream ss(fen);
-    std::string placement, side, castling, ep, half, full;
+    std::string placement_str, side_str, castling_str, ep_str, half_str,
+        full_str;
 
-    ss >> placement >> side >> castling >> ep >> half >> full;
+    ss >> placement_str >> side_str >> castling_str >> ep_str >> half_str >>
+        full_str;
 
     i32 rank = 7, file = 0;
-    data.pieces.fill(std::make_pair<PieceType, PieceColor>(PieceType::None,
-                                                           PieceColor::None));
-    for (char c : placement) {
+    auto &[pieces, isWhite, castling, en_passant] = data;
+    pieces.fill(std::make_pair<PieceType, PieceColor>(PieceType::None,
+                                                      PieceColor::None));
+    for (char c : placement_str) {
       if (c == '/') {
         rank--;
         file = 0;
       } else if (std::isdigit(c)) {
         i32 empty_squares = c - '0';
         for (i32 i = 0; i < empty_squares; i++) {
-          data.pieces[rank * 8 + file] = {PieceType::None, PieceColor::None};
+          pieces[rank * 8 + file] = {PieceType::None, PieceColor::None};
           file++;
         }
       } else {
-        data.pieces[rank * 8 + file] = CharToPiece(c);
+        pieces[rank * 8 + file] = CharToPiece(c);
         file++;
       }
     }
 
-    data.isWhite = (side == "w");
+    isWhite = (side_str == "w");
 
-    if (ep != "-") {
-      i32 ep_file = ep[0] - 'a', ep_rank = ep[1] - '1';
-      data.en_passant = ep_rank * 8 + ep_file;
+    if (ep_str != "-") {
+      i32 ep_file = ep_str[0] - 'a', ep_rank = ep_str[1] - '1';
+      en_passant = ep_rank * 8 + ep_file;
     }
 
     return data;

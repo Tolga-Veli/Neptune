@@ -29,7 +29,12 @@ enum class PieceColor : u8 {
 };
 
 namespace Core {
-consteval std::string_view strip_path(std::string_view path) {
+
+static inline i32 to1D(const std::pair<i32, i32> &curr) {
+  return (7 - curr.second) * 8 + curr.first;
+}
+
+static inline consteval std::string_view strip_path(std::string_view path) {
   size_t last_slash = path.find_last_of("\\/");
   return (last_slash == std::string_view::npos) ? path
                                                 : path.substr(last_slash + 1);
