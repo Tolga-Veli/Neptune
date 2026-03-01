@@ -1,32 +1,59 @@
 #pragma once
 
 #include <memory>
+#include <cmath>
 
 #include "AssetManager.hpp"
 #include "Chessboard.hpp"
 #include "Renderer.hpp"
 
+#include "imgui.h"
+#include "imgui-SFML.h"
+
+#define IMGUI_ENABLE_DOCKING
+#define IMGUI_HAS_VIEWPORT
+
 namespace Neptune {
 class Application {
 public:
-  Application()
-      : m_Window(sf::VideoMode({800, 800}), "Neptune"), m_AssetManager(),
-        m_Board() {
+  Application() = delete;
+  explicit Application(u32 width, u32 height)
+      : m_Window(sf::VideoMode({width, height}), "Neptune"), m_Board() {
+
     m_Window.setFramerateLimit(60);
+
+    if (!ImGui::SFML::Init(m_Window))
+      throw std::runtime_error("ImGui-SFML init failed");
+
+    ImGuiIO &io = ImGui::GetIO();
+    io.FontGlobalScale = 1.2;
+
+    ImGui::StyleColorsDark();
+
+    ImGuiStyle &style = ImGui::GetStyle();
+    style.ScaleAllSizes(1.2);
   }
 
-  static std::unique_ptr<Application> Create() {
-    return std::make_unique<Application>();
+  ~Application() {
+    m_Window.close();
+    ImGui::SFML::Shutdown();
+  }
+
+  static std::unique_ptr<Application> Create(u32 width, u32 height) {
+    return std::make_unique<Application>(width, height);
   }
 
   void run() {
+    using namespace Core;
+
     bool isSelected = false;
     std::pair<i32, i32> selected;
 
-    using namespace Core;
-
+    sf::Clock deltaClock;
     while (m_Window.isOpen()) {
       while (const auto event = m_Window.pollEvent()) {
+        ImGui::SFML::ProcessEvent(m_Window, *event);
+
         if (event->is<sf::Event::Closed>())
           m_Window.close();
 
@@ -67,20 +94,16 @@ public:
           m_Renderer.UpdateView(m_Window);
       }
 
-      m_Window.clear();
-
-      m_Renderer.DrawChessboard(m_Window);
-      if (isSelected)
-        m_Renderer.DrawHighlight(selected, m_Window, m_Board);
-      m_Renderer.DrawChessPieces(m_Window, m_Board, m_AssetManager);
-
-      m_Window.display();
+      m_Renderer.render(m_Window, m_Board, deltaClock, isSelected, selected);
     }
   }
 
+  static Assets::AssetManager &GetAssetManager() { return s_AssetManager; }
+
 private:
+  inline static Assets::AssetManager s_AssetManager;
+
   sf::RenderWindow m_Window;
-  Assets::AssetManager m_AssetManager;
   Core::Chessboard m_Board;
   Rendering::Renderer m_Renderer;
 };

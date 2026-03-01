@@ -10,9 +10,10 @@ namespace Neptune::Core {
 class FEN {
 public:
   struct FEN_Data {
-    std::array<std::pair<PieceType, PieceColor>, 64> pieces;
-    bool isWhite;
-    i64 castling = 0, en_passant = -1;
+    std::array<std::pair<PieceType, PieceColor>, 64> pieces{};
+    bool isWhite = true;
+    CastlingRights castling = CastlingRights::None;
+    i64 en_passant = -1;
   };
 
   static FEN_Data Parse(std::string fen) {

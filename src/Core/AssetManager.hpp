@@ -17,6 +17,11 @@ public:
   }
   ~AssetManager() = default;
 
+  AssetManager(const AssetManager &) = delete;
+  AssetManager &operator=(const AssetManager &) = delete;
+  AssetManager(AssetManager &&) = delete;
+  AssetManager &operator=(AssetManager &&) = delete;
+
   void Init() {
     if (!fs::exists(m_AssetDirectory) || !fs::is_directory(m_AssetDirectory))
       NEPTUNE_FATAL("Asset directortory not found!");

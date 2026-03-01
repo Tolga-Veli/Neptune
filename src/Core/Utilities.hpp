@@ -29,6 +29,36 @@ enum class PieceColor : u8 {
   Black,
 };
 
+enum class CastlingRights : u32 {
+  None = 0,
+  WhiteKingSide = 1 << 0,
+  WhiteQueenSide = 1 << 1,
+  BlackKingSide = 1 << 2,
+  BlackQueenSide = 1 << 3
+};
+
+inline CastlingRights operator|(CastlingRights a, CastlingRights b) {
+  return static_cast<CastlingRights>(static_cast<u32>(a) | static_cast<u32>(b));
+}
+
+inline CastlingRights operator&(CastlingRights a, CastlingRights b) {
+  return static_cast<CastlingRights>(static_cast<u32>(a) & static_cast<u32>(b));
+}
+
+inline CastlingRights operator~(CastlingRights a) {
+  return static_cast<CastlingRights>(~static_cast<u32>(a));
+}
+
+inline CastlingRights &operator|=(CastlingRights &a, CastlingRights b) {
+  a = a | b;
+  return a;
+}
+
+inline CastlingRights &operator&=(CastlingRights &a, CastlingRights b) {
+  a = a & b;
+  return a;
+}
+
 static inline i32 to1D(const std::pair<i32, i32> &curr) {
   return (7 - curr.second) * 8 + curr.first;
 }
