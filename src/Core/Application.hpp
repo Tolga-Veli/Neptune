@@ -26,12 +26,12 @@ public:
       throw std::runtime_error("ImGui-SFML init failed");
 
     ImGuiIO &io = ImGui::GetIO();
-    io.FontGlobalScale = 1.2;
+    io.FontGlobalScale = 1.5;
 
     ImGui::StyleColorsDark();
 
     ImGuiStyle &style = ImGui::GetStyle();
-    style.ScaleAllSizes(1.2);
+    style.ScaleAllSizes(1.5);
   }
 
   ~Application() {
