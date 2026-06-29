@@ -34,12 +34,16 @@ Neptune is a personal project that started as a graphical chess game and is grad
 ## Project Structure
 
 ```text
+assets/              # Piece textures and resources
+libs/                # Third-party libraries
 src/
-├── Core/          # Board representation and game state
-├── Engine/        # Move generation and (future) search
-├── Rendering/     # SFML rendering and GUI
-├── Assets/        # Piece textures and resources
-└── main.cpp       # Entry point
+├── Core/            # Board representation and game state
+├── Engine/          # Move generation and (future) search
+├── Rendering/       # SFML rendering and GUI
+├── Chessboard.hpp   # Chessboard class that holds all chess data
+├── Chessboard.cpp   # Declarations of chessboard class
+├── FEN.hpp          # FEN string parsing for import/export
+└── main.cpp         # Entry point
 ```
 
 ---
