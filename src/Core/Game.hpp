@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cmath>
-#include <cstdlib>
 #include <memory>
 #include <optional>
 
@@ -32,12 +31,6 @@ public:
     m_Board.Reset();
     m_IsSelected = false, m_Selected = {0, 0};
     m_PromotionPending = false, m_PendingMove = {};
-
-#ifdef _WIN32
-    std::system("cls");
-#else
-    std::system("clear");
-#endif
   }
 
   void Shutdown() { m_Window.close(); }
