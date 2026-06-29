@@ -71,7 +71,8 @@ cmake --build build
 Run:
 
 ```bash
-./build/Neptune
+cd build
+./Neptune
 ```
 
 ---
