@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 
+#include "Core/Logging.hpp"
 #include "Core/Utilities.hpp"
 
 namespace Neptune::Core {
@@ -11,9 +12,9 @@ class FEN {
 public:
   struct FEN_Data {
     std::array<std::pair<PieceType, PieceColor>, 64> pieces{};
-    bool isWhite = true;
-    CastlingRights castling = CastlingRights::None;
-    i64 en_passant = -1;
+    bool isWhite{true};
+    CastlingRights castling = {true, true, true, true};
+    i32 en_passant{-1};
   };
 
   static FEN_Data Parse(std::string fen) {
@@ -52,6 +53,7 @@ public:
       en_passant = ep_rank * 8 + ep_file;
     }
 
+    NEPTUNE_INFO("Parsed FEN string");
     return data;
   }
 

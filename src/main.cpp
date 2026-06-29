@@ -1,6 +1,6 @@
-#include "Core/Application.hpp"
+#include "Core/Game.hpp"
 
 int main() {
-  auto app = Neptune::Application::Create(800, 800);
-  app->run();
+  auto app = Neptune::Game::Create(800, 800);
+  app->Run();
 }

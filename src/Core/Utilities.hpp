@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 #include <string_view>
 
 namespace Neptune {
@@ -13,55 +14,42 @@ using u32 = std::uint32_t;
 using u64 = std::uint64_t;
 
 namespace Core {
-enum class PieceType : u8 {
-  None = 0,
-  Pawn,
-  Knight,
-  Bishop,
-  Rook,
-  Queen,
-  King,
+enum class PieceType : u8 { None = 0, Pawn, Knight, Bishop, Rook, Queen, King };
+enum class PieceColor : u8 { None = 0, White, Black };
+enum class GameState { None = 0, WhiteWins, BlackWins, Draw };
+
+inline std::string to_string(PieceType type) {
+  using enum PieceType;
+  switch (type) {
+  case Pawn:
+    return "Pawn";
+  case Knight:
+    return "Knight";
+  case Bishop:
+    return "Bishop";
+  case Rook:
+    return "Rook";
+  case Queen:
+    return "Queen";
+  case King:
+    return "King";
+  default:
+    return "";
+  }
+}
+
+inline std::string to_string(PieceColor color) {
+  if (color == PieceColor::White)
+    return "White";
+  else if (color == PieceColor::Black)
+    return "Black";
+  else
+    return "";
+}
+
+struct CastlingRights {
+  bool whiteKingSide, whiteQueenSide, blackKingSide, blackQueenSide;
 };
-
-enum class PieceColor : u8 {
-  None = 0,
-  White,
-  Black,
-};
-
-enum class CastlingRights : u32 {
-  None = 0,
-  WhiteKingSide = 1 << 0,
-  WhiteQueenSide = 1 << 1,
-  BlackKingSide = 1 << 2,
-  BlackQueenSide = 1 << 3
-};
-
-inline CastlingRights operator|(CastlingRights a, CastlingRights b) {
-  return static_cast<CastlingRights>(static_cast<u32>(a) | static_cast<u32>(b));
-}
-
-inline CastlingRights operator&(CastlingRights a, CastlingRights b) {
-  return static_cast<CastlingRights>(static_cast<u32>(a) & static_cast<u32>(b));
-}
-
-inline CastlingRights operator~(CastlingRights a) {
-  return static_cast<CastlingRights>(~static_cast<u32>(a));
-}
-
-inline CastlingRights &operator|=(CastlingRights &a, CastlingRights b) {
-  a = a | b;
-  return a;
-}
-
-inline CastlingRights &operator&=(CastlingRights &a, CastlingRights b) {
-  a = a & b;
-  return a;
-}
-
-static inline i32 to1D(const std::pair<i32, i32> &curr) {
-  return (7 - curr.second) * 8 + curr.first;
-}
 
 static inline consteval std::string_view strip_path(std::string_view path) {
   size_t last_slash = path.find_last_of("\\/");

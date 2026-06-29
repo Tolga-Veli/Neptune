@@ -26,6 +26,7 @@ public:
     if (!fs::exists(m_AssetDirectory) || !fs::is_directory(m_AssetDirectory))
       NEPTUNE_FATAL("Asset directortory not found!");
 
+    NEPTUNE_INFO("AssetManager Initialized");
     for (const auto &entry : fs::directory_iterator(m_AssetDirectory)) {
       if (entry.is_directory())
         continue;

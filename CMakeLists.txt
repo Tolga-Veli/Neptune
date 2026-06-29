@@ -12,7 +12,7 @@ option(SFML_BUILD_NETWORK "Build network" OFF)
 option(SFML_BUILD_EXAMPLES "Build examples" OFF)
 option(SFML_BUILD_DOC "Build documentation" OFF)
 
-add_subdirectory(libs/sfml)
+add_subdirectory(libs/SFML)
 
 # Tell imgui-sfml where imgui is
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/imgui)
