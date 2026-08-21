@@ -19,7 +19,7 @@ Neptune is a simple chess game with nice UI.
 
 ---
 
-![Neptune](assets/neptune.png)
+![Neptune](assets/Neptune.png)
 
 ## Project Structure
 
