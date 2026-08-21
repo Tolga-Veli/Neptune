@@ -7,23 +7,25 @@
 namespace Neptune::Core {
 
 void Chessboard::RebuildOccupancy() {
-  m_WhitePieces.GetOccupancyBitboard() = 0;
-  m_BlackPieces.GetOccupancyBitboard() = 0;
+  auto white_occ = m_WhitePieces.GetOccupancyBitboard();
+  auto black_occ = m_BlackPieces.GetOccupancyBitboard();
+
+  white_occ = 0;
+  black_occ = 0;
 
   for (u8 i = 1; i < 7; i++) {
     auto type = static_cast<PieceType>(i);
-    m_WhitePieces.GetOccupancyBitboard() |=
-        m_WhitePieces.GetPiecesBitboard(type);
-    m_BlackPieces.GetOccupancyBitboard() |=
-        m_BlackPieces.GetPiecesBitboard(type);
+    white_occ |= m_WhitePieces.GetPiecesBitboard(type);
+    black_occ |= m_BlackPieces.GetPiecesBitboard(type);
   }
 }
 
-void Chessboard::LoadFEN(std::string fen_string) {
+void Chessboard::LoadFEN(const std::string &fen_string) {
   m_WhitePieces.Reset(), m_BlackPieces.Reset();
-  auto [pieces, isWhite, castling, en_passant] = FEN::Parse(fen_string);
+
+  auto [pieces, isWhite, castling, en_passant] = FEN::Import(fen_string);
   for (i32 idx = 0; idx < 64; idx++) {
-    const auto &[type, color] = pieces[idx];
+    auto [type, color] = pieces[idx];
     if (type == PieceType::None || color == PieceColor::None)
       continue;
 
@@ -41,6 +43,8 @@ void Chessboard::LoadFEN(std::string fen_string) {
   RebuildOccupancy();
   NEPTUNE_INFO("Loaded the FEN string");
 }
+
+void Chessboard::ExportFEN() { /* TODO:*/ }
 
 std::pair<PieceType, PieceColor> Chessboard::GetPieceAt(i32 square) {
   u64 mask = 1ULL << square;
@@ -240,9 +244,8 @@ void Chessboard::MakeMove(const Engine::Move &move) {
   us.GetOccupancyBitboard() |= toBB;
 
   // DOUBLE PAWN PUSH → SET EN PASSANT
-  if (piece == PieceType::Pawn && move.flag == MoveFlag::DoublePawnPush) {
+  if (piece == PieceType::Pawn && move.flag == MoveFlag::DoublePawnPush)
     m_EnPassant = (move.from + move.to) / 2;
-  }
 
   m_SideToMove = enemy;
 }

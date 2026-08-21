@@ -17,10 +17,12 @@ Game::Game(u32 width, u32 height)
     throw std::runtime_error("ImGui-SFML init failed");
 
   ImGuiIO &io = ImGui::GetIO();
-  io.FontGlobalScale = 1.5f;
+  io.FontGlobalScale = 2.0f;
 
-  ImGui::StyleColorsDark();
-  ImGui::GetStyle().ScaleAllSizes(1.5f);
+  // ImGui::StyleColorsDark();
+  ImGui::StyleColorsLight();
+
+  ImGui::GetStyle().ScaleAllSizes(2.0f);
 }
 
 void Game::Run() {
@@ -32,10 +34,14 @@ void Game::Run() {
     auto legal_moves = m_Board.GetLegalMoves();
 
     Core::GameState result{Core::GameState::None};
-    if (legal_moves.empty())
-      result = (m_Board.GetSideToMove() == Core::PieceColor::White)
-                   ? Core::GameState::BlackWins
-                   : Core::GameState::WhiteWins;
+    if (legal_moves.empty()) {
+      if (m_Board.InCheck(m_Board.GetSideToMove()))
+        result = (m_Board.GetSideToMove() == Core::PieceColor::White
+                      ? Core::GameState::BlackWins
+                      : Core::GameState::WhiteWins);
+      else
+        result = Core::GameState::Draw;
+    }
 
     Rendering::RenderInput input{m_IsSelected,
                                  m_PromotionPending,

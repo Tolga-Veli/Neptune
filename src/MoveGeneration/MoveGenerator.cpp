@@ -1,6 +1,7 @@
 #include "MoveGenerator.hpp"
 #include "AttackTables.hpp"
 #include "Chessboard.hpp"
+#include "Core/Utilities.hpp"
 #include "MoveGeneration/Move.hpp"
 #include "SlidingAttacks.hpp"
 
@@ -39,7 +40,7 @@ MoveGenerator::GenerateLegalMoves(const Core::Chessboard &board) {
 }
 
 template <Core::PieceType type>
-  requires(type != Core::PieceType::Pawn && type != Core::PieceType::King)
+  requires(type != Core::PieceType::King)
 void MoveGenerator::GeneratePieceMoves(const Core::Chessboard &board,
                                        std::vector<Move> &moves) {
   const auto &pieces = board.GetPieces(board.GetSideToMove());
@@ -64,18 +65,80 @@ void MoveGenerator::GeneratePieceMoves(const Core::Chessboard &board,
       attacks = SlidingAttacks::Rook(from, own | enemy);
     else if constexpr (type == Queen)
       attacks = SlidingAttacks::Queen(from, own | enemy);
+    else if constexpr (type == Pawn) {
+      i32 rank = from / 8;
+      // PUSHES
+      if (board.GetSideToMove() == Core::PieceColor::White) {
+        i32 one = from + 8;
+        if (!(own & (1ULL << one)) && !(enemy & (1ULL << one))) {
+          if (rank == 6) {
+            // promotion push
+            moves.emplace_back(from, one, MoveFlag::KnightPromotion);
+            moves.emplace_back(from, one, MoveFlag::BishopPromotion);
+            moves.emplace_back(from, one, MoveFlag::RookPromotion);
+            moves.emplace_back(from, one, MoveFlag::QueenPromotion);
+          } else {
+            moves.emplace_back(from, one, MoveFlag::Quiet);
 
-    attacks &= ~own;
+            if (rank == 1) {
+              i32 two = from + 16;
 
-    while (attacks) {
-      i32 to = std::countr_zero(attacks);
-      attacks &= attacks - 1;
+              if (!(own & (1ULL << two)) && !(enemy & (1ULL << two)))
+                moves.emplace_back(from, two, MoveFlag::DoublePawnPush);
+            }
+          }
+        }
+      } else {
+        i32 one = from - 8;
+        if (!(own & (1ULL << one)) && !(enemy & (1ULL << one))) {
+          if (rank == 1) {
+            moves.emplace_back(from, one, MoveFlag::KnightPromotion);
+            moves.emplace_back(from, one, MoveFlag::BishopPromotion);
+            moves.emplace_back(from, one, MoveFlag::RookPromotion);
+            moves.emplace_back(from, one, MoveFlag::QueenPromotion);
+          } else {
+            moves.emplace_back(from, one, MoveFlag::Quiet);
 
-      u64 toBit = 1ULL << to;
-      MoveFlag flag = (enemy & toBit) ? MoveFlag::Capture : MoveFlag::Quiet;
+            if (rank == 6) {
+              i32 two = from - 16;
 
-      moves.emplace_back(from, to, flag);
+              if (!(own & (1ULL << two)) && !(enemy & (1ULL << two)))
+                moves.emplace_back(from, two, MoveFlag::DoublePawnPush);
+            }
+          }
+        }
+      }
+
+      attacks = AttackTables::Pawn(from, board.GetSideToMove());
     }
+
+    u64 targets = attacks & enemy;
+    while (targets) {
+      i32 to = std::countr_zero(targets);
+      targets &= targets - 1;
+
+      if constexpr (type == Core::PieceType::Pawn) {
+        if ((board.GetSideToMove() == Core::PieceColor::White)
+                ? (from / 8 == 6)
+                : (from / 8 == 1)) {
+          moves.emplace_back(from, to, MoveFlag::KnightPromotionCapture);
+          moves.emplace_back(from, to, MoveFlag::BishopPromotionCapture);
+          moves.emplace_back(from, to, MoveFlag::RookPromotionCapture);
+          moves.emplace_back(from, to, MoveFlag::QueenPromotionCapture);
+        } else
+          moves.emplace_back(from, to, MoveFlag::Capture);
+      } else {
+        u64 toBit = 1ULL << to;
+        MoveFlag flag = (enemy & toBit) ? MoveFlag::Capture : MoveFlag::Quiet;
+
+        moves.emplace_back(from, to, flag);
+      }
+    }
+
+    if constexpr (type == Core::PieceType::Pawn)
+      if (board.GetEnPassant() != -1 &&
+          attacks & (1ULL << board.GetEnPassant()))
+        moves.emplace_back(from, board.GetEnPassant(), MoveFlag::EnPassant);
   }
 }
 
@@ -101,84 +164,7 @@ void MoveGenerator::GenerateQueenMoves(const Core::Chessboard &board,
 
 void MoveGenerator::GeneratePawnMoves(const Core::Chessboard &board,
                                       std::vector<Move> &moves) {
-  const auto &pieces = board.GetPieces(board.GetSideToMove());
-  const u64 own = pieces.GetOccupancyBitboard(),
-            enemy = board.GetPieces(board.Opposite(board.GetSideToMove()))
-                        .GetOccupancyBitboard();
-  const i32 epSquare = board.GetEnPassant();
-
-  u64 pawns = pieces.GetPiecesBitboard(Core::PieceType::Pawn);
-  while (pawns) {
-    i32 from = std::countr_zero(pawns);
-    pawns &= pawns - 1;
-
-    i32 rank = from / 8;
-
-    // PUSHES
-    if (board.GetSideToMove() == Core::PieceColor::White) {
-      i32 one = from + 8;
-      if (!(own & (1ULL << one)) && !(enemy & (1ULL << one))) {
-        if (rank == 6) {
-          // promotion push
-          moves.emplace_back(from, one, MoveFlag::KnightPromotion);
-          moves.emplace_back(from, one, MoveFlag::BishopPromotion);
-          moves.emplace_back(from, one, MoveFlag::RookPromotion);
-          moves.emplace_back(from, one, MoveFlag::QueenPromotion);
-        } else {
-          moves.emplace_back(from, one, MoveFlag::Quiet);
-
-          if (rank == 1) {
-            i32 two = from + 16;
-
-            if (!(own & (1ULL << two)) && !(enemy & (1ULL << two)))
-              moves.emplace_back(from, two, MoveFlag::DoublePawnPush);
-          }
-        }
-      }
-    } else {
-      i32 one = from - 8;
-      if (!(own & (1ULL << one)) && !(enemy & (1ULL << one))) {
-        if (rank == 1) {
-          moves.emplace_back(from, one, MoveFlag::KnightPromotion);
-          moves.emplace_back(from, one, MoveFlag::BishopPromotion);
-          moves.emplace_back(from, one, MoveFlag::RookPromotion);
-          moves.emplace_back(from, one, MoveFlag::QueenPromotion);
-        } else {
-          moves.emplace_back(from, one, MoveFlag::Quiet);
-
-          if (rank == 6) {
-            i32 two = from - 16;
-
-            if (!(own & (1ULL << two)) && !(enemy & (1ULL << two)))
-              moves.emplace_back(from, two, MoveFlag::DoublePawnPush);
-          }
-        }
-      }
-    }
-
-    // CAPTURES
-    u64 attacks = AttackTables::Pawn(from, board.GetSideToMove()),
-        targets = attacks & enemy;
-
-    while (targets) {
-      i32 to = std::countr_zero(targets);
-      targets &= targets - 1;
-
-      if ((board.GetSideToMove() == Core::PieceColor::White)
-              ? (from / 8 == 6)
-              : (from / 8 == 1)) {
-        moves.emplace_back(from, to, MoveFlag::KnightPromotionCapture);
-        moves.emplace_back(from, to, MoveFlag::BishopPromotionCapture);
-        moves.emplace_back(from, to, MoveFlag::RookPromotionCapture);
-        moves.emplace_back(from, to, MoveFlag::QueenPromotionCapture);
-      } else
-        moves.emplace_back(from, to, MoveFlag::Capture);
-    }
-
-    // EN PASSANT
-    if (epSquare != -1 && attacks & (1ULL << epSquare))
-      moves.emplace_back(from, epSquare, MoveFlag::EnPassant);
-  }
+  GeneratePieceMoves<Core::PieceType::Pawn>(board, moves);
 }
 
 void MoveGenerator::GenerateKingMoves(const Core::Chessboard &board,

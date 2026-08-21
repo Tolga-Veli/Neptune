@@ -8,6 +8,8 @@
 #include "Core/Utilities.hpp"
 
 namespace Neptune::Core {
+class Chessboard;
+
 class FEN {
 public:
   struct FEN_Data {
@@ -17,7 +19,7 @@ public:
     i32 en_passant{-1};
   };
 
-  static FEN_Data Parse(std::string fen) {
+  static FEN_Data Import(const std::string &fen) {
     FEN_Data data;
     std::stringstream ss(fen);
     std::string placement_str, side_str, castling_str, ep_str, half_str,
@@ -56,6 +58,8 @@ public:
     NEPTUNE_INFO("Parsed FEN string");
     return data;
   }
+
+  static std::string Export(const Chessboard &board) { return ""; }
 
 private:
   static std::pair<PieceType, PieceColor> CharToPiece(char c) {

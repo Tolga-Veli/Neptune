@@ -25,7 +25,7 @@ public:
 
 private:
   template <Core::PieceType type>
-    requires(type != Core::PieceType::Pawn && type != Core::PieceType::King)
+    requires(type != Core::PieceType::King)
   static void GeneratePieceMoves(const Core::Chessboard &board,
                                  std::vector<Move> &moves);
 

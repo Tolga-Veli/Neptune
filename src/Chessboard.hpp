@@ -35,7 +35,6 @@ private:
 };
 
 class Chessboard {
-
 public:
   Chessboard(const std::string &fen =
                  "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") {
@@ -52,7 +51,8 @@ public:
 
   void RebuildOccupancy();
 
-  void LoadFEN(std::string fen_string);
+  void LoadFEN(const std::string &fen_string);
+  void ExportFEN();
 
   std::pair<PieceType, PieceColor> GetPieceAt(i32 square);
 
