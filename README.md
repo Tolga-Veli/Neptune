@@ -1,8 +1,8 @@
 # ♆ Neptune
 
-*A modern chess game and future chess engine written in C++23.*
+*Chess game written in C++23.*
 
-Neptune is a personal project that started as a graphical chess game and is gradually evolving into a complete chess engine built from scratch.
+Neptune is a simple chess game with nice UI.
 
 ---
 
@@ -10,26 +10,16 @@ Neptune is a personal project that started as a graphical chess game and is grad
 
 ### Current
 
-- ♟️ Playable chess game
+- ♟️ Playable chess game with most of the chess rules (missing 50-move rule and insufficient material draw)
 - ✅ Legal move generation
 - ♖  Castling
 - 🔄 Pawn promotion
 - 📖 FEN import
-- 👆 Piece selection with legal move highlighting
 - 🎨 Graphical interface built with SFML and Dear ImGui
 
-### Planned
-
-- ⚡ Alpha-beta search with iterative deepening
-- 🪄 Magic bitboards
-- ♻️ Zobrist hashing
-- 📚 Transposition tables
-- 🎯 Move ordering heuristics
-- ⏱️ Time management
-- 🤖 UCI protocol support
-- 📈 Evaluation function
-
 ---
+
+![Neptune](assets/neptune.png)
 
 ## Project Structure
 
@@ -41,7 +31,6 @@ src/
 ├── Engine/          # Move generation and (future) search
 ├── Rendering/       # SFML rendering and GUI
 ├── Chessboard.hpp   # Chessboard class that holds all chess data
-├── Chessboard.cpp   # Declarations of chessboard class
 ├── FEN.hpp          # FEN string parsing for import/export
 └── main.cpp         # Entry point
 ```
@@ -103,7 +92,7 @@ cd build
 
 ## Why "Neptune"?
 
-Neptune is named after the Roman god of the sea. Chess programming has a surprising amount of depth, and this project is my way of exploring it one component at a time.
+Chess is similar to the ocean, it goes deeper than you would initially suspect, and this project is my way of exploring it one step at a time.
 
 ---
 
