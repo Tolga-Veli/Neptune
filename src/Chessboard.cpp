@@ -85,25 +85,21 @@ bool Chessboard::IsAttacked(i32 square, PieceColor bySide) const {
   const u64 occupied = OccupancyBoth();
 
   using namespace Engine;
-  if (AttackTables::Pawn(square, Opposite(bySide)) &
-      pieces.GetPiecesBitboard(PieceType::Pawn))
+  if (AttackTables::Pawn(square, Opposite(bySide)) & pieces.GetPiecesBitboard(PieceType::Pawn))
     return true;
 
-  if (AttackTables::Knight(square) &
-      pieces.GetPiecesBitboard(PieceType::Knight))
+  if (AttackTables::Knight(square) & pieces.GetPiecesBitboard(PieceType::Knight))
     return true;
 
   if (AttackTables::King(square) & pieces.GetPiecesBitboard(PieceType::King))
     return true;
 
   if (SlidingAttacks::Bishop(square, occupied) &
-      (pieces.GetPiecesBitboard(PieceType::Bishop) |
-       pieces.GetPiecesBitboard(PieceType::Queen)))
+      (pieces.GetPiecesBitboard(PieceType::Bishop) | pieces.GetPiecesBitboard(PieceType::Queen)))
     return true;
 
   if (SlidingAttacks::Rook(square, occupied) &
-      (pieces.GetPiecesBitboard(PieceType::Rook) |
-       pieces.GetPiecesBitboard(PieceType::Queen)))
+      (pieces.GetPiecesBitboard(PieceType::Rook) | pieces.GetPiecesBitboard(PieceType::Queen)))
     return true;
 
   return false;
@@ -111,11 +107,9 @@ bool Chessboard::IsAttacked(i32 square, PieceColor bySide) const {
 
 bool Chessboard::CanCastle(PieceColor side, bool kingSide) const {
   if (side == PieceColor::White)
-    return (kingSide == true) ? m_Castling.whiteKingSide
-                              : m_Castling.whiteQueenSide;
+    return (kingSide == true) ? m_Castling.whiteKingSide : m_Castling.whiteQueenSide;
   else
-    return (kingSide == true) ? m_Castling.blackKingSide
-                              : m_Castling.blackQueenSide;
+    return (kingSide == true) ? m_Castling.blackKingSide : m_Castling.blackQueenSide;
 }
 
 void Chessboard::MakeMove(const Engine::Move &move) {
@@ -251,33 +245,34 @@ void Chessboard::MakeMove(const Engine::Move &move) {
 }
 
 void Chessboard::UpdateCastlingRights(i32 from, i32 to, PieceType piece) {
-  auto &[whiteKingSide, whiteQueenSide, blackKingSide, blackQueenSide] =
-      m_Castling;
+  auto &[whiteKingSide, whiteQueenSide, blackKingSide, blackQueenSide] = m_Castling;
 
   // WHITE
-  if (piece == PieceType::King && from == 4)
-    whiteKingSide = whiteQueenSide = false;
-  if (piece == PieceType::Rook && from == 0)
-    whiteQueenSide = false;
-  if (piece == PieceType::Rook && from == 7)
-    whiteKingSide = false;
+  if (piece == PieceType::King) {
+    if (from == 4)
+      whiteKingSide = whiteQueenSide = false;
+    else if (from == 60)
+      blackKingSide = blackQueenSide = false;
 
-  // BLACK
-  if (piece == PieceType::King && from == 60)
-    blackKingSide = blackQueenSide = false;
-  if (piece == PieceType::Rook && from == 56)
-    blackQueenSide = false;
-  if (piece == PieceType::Rook && from == 63)
-    blackKingSide = false;
+  } else if (piece == PieceType::Rook) {
+    if (from == 0)
+      whiteQueenSide = false;
+    else if (from == 7)
+      whiteKingSide = false;
+    else if (from == 56)
+      blackQueenSide = false;
+    else if (from == 63)
+      blackKingSide = false;
+  }
 
   // rook captured on key squares
   if (to == 0)
     whiteQueenSide = false;
-  if (to == 7)
+  else if (to == 7)
     whiteKingSide = false;
-  if (to == 56)
+  else if (to == 56)
     blackQueenSide = false;
-  if (to == 63)
+  else if (to == 63)
     blackKingSide = false;
 }
 

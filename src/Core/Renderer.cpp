@@ -5,10 +5,8 @@
 #include "imgui.h"
 
 namespace Neptune::Rendering {
-std::optional<Engine::MoveFlag> Renderer::Render(sf::RenderWindow &window,
-                                                 Core::Chessboard &board,
-                                                 sf::Clock &deltaClock,
-                                                 RenderInput &input) {
+std::optional<Engine::MoveFlag> Renderer::Render(sf::RenderWindow &window, Core::Chessboard &board,
+                                                 sf::Clock &deltaClock, RenderInput &input) {
   ImGui::SFML::Update(window, deltaClock.restart());
   window.clear();
 
@@ -27,8 +25,7 @@ std::optional<Engine::MoveFlag> Renderer::Render(sf::RenderWindow &window,
 
   // Promotions
   if (input.promotionPending)
-    chosenPromotion =
-        DrawPromotionInterface(input.promotionSide, input.promotionIsCapture);
+    chosenPromotion = DrawPromotionInterface(input.promotionSide, input.promotionIsCapture);
 
   DrawGameOverScreen(input);
 
@@ -44,12 +41,9 @@ std::optional<Engine::MoveFlag> Renderer::Render(sf::RenderWindow &window,
 }
 
 void Renderer::DrawChessboard(sf::RenderWindow &window) const {
-  sf::Color light((uint8_t)(m_LightCol[0] * 255),
-                  (uint8_t)(m_LightCol[1] * 255),
-                  (uint8_t)(m_LightCol[2] * 255));
+  sf::Color light((uint8_t)(m_LightCol[0] * 255), (uint8_t)(m_LightCol[1] * 255), (uint8_t)(m_LightCol[2] * 255));
 
-  sf::Color dark((uint8_t)(m_DarkCol[0] * 255), (uint8_t)(m_DarkCol[1] * 255),
-                 (uint8_t)(m_DarkCol[2] * 255));
+  sf::Color dark((uint8_t)(m_DarkCol[0] * 255), (uint8_t)(m_DarkCol[1] * 255), (uint8_t)(m_DarkCol[2] * 255));
 
   sf::RectangleShape square({TILE_SIZE, TILE_SIZE});
 
@@ -62,11 +56,9 @@ void Renderer::DrawChessboard(sf::RenderWindow &window) const {
   }
 }
 
-void Renderer::DrawSelectedSquare(sf::RenderWindow &window,
-                                  const std::pair<i32, i32> &selected) const {
-  sf::Color highlight(
-      (uint8_t)(m_HighlightCol[0] * 255), (uint8_t)(m_HighlightCol[1] * 255),
-      (uint8_t)(m_HighlightCol[2] * 255), (uint8_t)(m_HighlightCol[3] * 255));
+void Renderer::DrawSelectedSquare(sf::RenderWindow &window, const std::pair<i32, i32> &selected) const {
+  sf::Color highlight((uint8_t)(m_HighlightCol[0] * 255), (uint8_t)(m_HighlightCol[1] * 255),
+                      (uint8_t)(m_HighlightCol[2] * 255), (uint8_t)(m_HighlightCol[3] * 255));
 
   sf::RectangleShape r({TILE_SIZE, TILE_SIZE});
   r.setFillColor(highlight);
@@ -75,8 +67,7 @@ void Renderer::DrawSelectedSquare(sf::RenderWindow &window,
   window.draw(r);
 }
 
-void Renderer::DrawLegalMoves(sf::RenderWindow &window,
-                              const std::pair<i32, i32> &selected,
+void Renderer::DrawLegalMoves(sf::RenderWindow &window, const std::pair<i32, i32> &selected,
                               const std::vector<Engine::Move> &moves) const {
   sf::CircleShape dot(TILE_SIZE * 0.15f);
   dot.setFillColor(sf::Color(0, 0, 0, 90));
@@ -91,15 +82,13 @@ void Renderer::DrawLegalMoves(sf::RenderWindow &window,
     i32 to = m.to;
     i32 x = to % 8, renderY = 7 - (to / 8);
 
-    dot.setPosition(
-        {x * TILE_SIZE + TILE_SIZE / 2, renderY * TILE_SIZE + TILE_SIZE / 2});
+    dot.setPosition({x * TILE_SIZE + TILE_SIZE / 2, renderY * TILE_SIZE + TILE_SIZE / 2});
 
     window.draw(dot);
   }
 }
 
-void Renderer::DrawChessPieces(sf::RenderWindow &window,
-                               Core::Chessboard &board) const {
+void Renderer::DrawChessPieces(sf::RenderWindow &window, Core::Chessboard &board) const {
   for (i32 sq = 0; sq < 64; sq++) {
     auto [type, color] = board.GetPieceAt(sq);
 
@@ -125,17 +114,15 @@ void Renderer::DrawChessPieces(sf::RenderWindow &window,
   }
 }
 
-std::optional<Engine::MoveFlag>
-Renderer::DrawPromotionInterface(Core::PieceColor side, bool isCapture) {
+std::optional<Engine::MoveFlag> Renderer::DrawPromotionInterface(Core::PieceColor side, bool isCapture) {
   ImGui::OpenPopup("Choose Promotion");
 
   ImVec2 center(BOARD_SIZE * 0.5f, BOARD_SIZE * 0.5f);
   ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
   ImGui::SetNextWindowSize(ImVec2(420, 160), ImGuiCond_Always);
 
-  ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-                           ImGuiWindowFlags_NoScrollbar |
-                           ImGuiWindowFlags_NoCollapse;
+  ImGuiWindowFlags flags =
+      ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse;
 
   std::optional<Engine::MoveFlag> chosen;
 
@@ -148,7 +135,7 @@ Renderer::DrawPromotionInterface(Core::PieceColor side, bool isCapture) {
     using enum Engine::MoveFlag;
 
     struct Option {
-      const char *label;
+      std::string label;
       std::string texSuffix;
       Engine::MoveFlag quietFlag, captureFlag;
     };
@@ -162,9 +149,9 @@ Renderer::DrawPromotionInterface(Core::PieceColor side, bool isCapture) {
 
     for (auto &opt : options) {
       auto tex = Game::GetAssetManager().GetTexture(prefix + opt.texSuffix);
-      ImGui::PushID(opt.label);
+      ImGui::PushID(opt.label.c_str());
 
-      if (ImGui::ImageButton(opt.label, *tex, ImVec2(64, 64))) {
+      if (ImGui::ImageButton(opt.label.c_str(), *tex, ImVec2(64, 64))) {
         chosen = isCapture ? opt.captureFlag : opt.quietFlag;
         ImGui::CloseCurrentPopup();
       }
@@ -204,14 +191,11 @@ void Renderer::DrawGameOverScreen(RenderInput &input) {
     return;
   }
 
-  ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
-                          ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+  ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 
   ImGui::SetNextWindowBgAlpha(0.85f);
 
-  ImGuiWindowFlags flags = ImGuiWindowFlags_AlwaysAutoResize |
-                           ImGuiWindowFlags_NoCollapse |
-                           ImGuiWindowFlags_NoResize;
+  ImGuiWindowFlags flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
 
   ImGui::Begin("Game Over", nullptr, flags);
 
@@ -233,7 +217,7 @@ void Renderer::UpdateView(sf::RenderWindow &window) const {
   auto size = window.getSize();
   sf::View view(sf::FloatRect({0, 0}, {BOARD_SIZE, BOARD_SIZE}));
 
-  float ratio = (float)size.x / size.y;
+  float ratio = static_cast<float>(size.x) / static_cast<float>(size.y);
   float viewRatio = 1.0f;
 
   float w = 1.0f, h = 1.0f, px = 0.0f, py = 0.0f;
@@ -250,8 +234,7 @@ void Renderer::UpdateView(sf::RenderWindow &window) const {
   window.setView(view);
 }
 
-std::string Renderer::ToTextureName(Core::PieceType type,
-                                    Core::PieceColor color) const noexcept {
+std::string Renderer::ToTextureName(Core::PieceType type, Core::PieceColor color) const noexcept {
   using namespace Core;
 
   std::string s;

@@ -1,0 +1,25 @@
+
+Index:
+  Background: Build
+  StandardLibrary: true
+
+Completion:
+  AllScopes: true
+  ArgumentLists: Delimiters
+  CodePatterns: None
+
+Diagnostics:
+  UnusedIncludes: Strict
+  ClangTidy:
+    Add: [bugprone-*, performance-*]
+    FastCheckFilter: Strict
+
+InlayHints:
+  Enabled: false 
+
+---
+If:
+  PathMatch: '.*\.(cc|cpp|cxx|hpp|hh|hxx|ipp|tpp|ixx|cppm)$'
+CompileFlags:
+  Add: [-std=c++23]
+

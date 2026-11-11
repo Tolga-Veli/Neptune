@@ -1,0 +1,54 @@
+
+BasedOnStyle: LLVM
+Language: Cpp
+Standard: Latest
+
+# General
+ColumnLimit: 120
+IndentWidth: 2
+ContinuationIndentWidth: 4
+TabWidth: 2
+UseTab: Never
+BreakBeforeBraces: Attach
+
+# Compact code
+AllowShortFunctionsOnASingleLine: All
+AllowShortBlocksOnASingleLine: Always
+AllowShortLambdasOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+
+# Functions, templates and constructors
+BreakAfterAttributes: Never
+BreakTemplateDeclarations: No
+BinPackArguments: true
+BinPackParameters: BinPack
+AllowAllArgumentsOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
+PackConstructorInitializers: BinPack
+BreakBeforeConceptDeclarations: Allowed
+
+# Pointers and spacing
+DerivePointerAlignment: false
+PointerAlignment: Right
+ReferenceAlignment: Pointer
+SpaceBeforeParens: ControlStatements
+SpaceBeforeCpp11BracedList: false
+
+# Namespaces, classes and switch statements
+NamespaceIndentation: None
+IndentCaseLabels: false
+AccessModifierOffset: -2
+FixNamespaceComments: true
+
+# Preserve layout decisions
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignTrailingComments: false
+SortIncludes: Never
+IncludeBlocks: Preserve
+SortUsingDeclarations: Never
+ReflowComments: Never
+MaxEmptyLinesToKeep: 1
+
